@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>FANOS SEC — Security Training Sandbox</title>
+  <link rel="stylesheet" href="/style.css">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%2300FF41'><path d='M12 1L3 5v6c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V5l-9-4z'/></svg>">
+</head>
+<body>
+
+  <!-- Top Navigation Bar -->
+  <nav class="navbar">
+    <div class="container nav-container">
+      <div style="display: flex; align-items: center; gap: 1.5rem;">
+        <a href="http://localhost:5173" class="btn-back" title="Return to FANOS SEC Homepage">
+          ← Return to Platform Home
+        </a>
+        <a href="/" class="brand">
+          <span class="brand-badge">SANDBOX</span>
+          <span>FANOS <span class="neon">SEC</span></span>
+        </a>
+      </div>
+      <ul class="nav-links">
+        <li><a href="/" class="nav-link active">Dashboard</a></li>
+        <li><a href="/sqli.html" class="nav-link">SQLi Lab</a></li>
+        <li><a href="/xss.html" class="nav-link">XSS Lab</a></li>
+        <li><a href="http://localhost:5173/labs" class="nav-link" style="color: var(--cyber-neon);">Labs Portal ↗</a></li>
+      </ul>
+    </div>
+  </nav>
+
+  <!-- Hero Section -->
+  <main class="container">
+    <section class="hero">
+      <div class="badge-tag">
+        <span>⚡ EDUCATIONAL TRAINING LABS</span>
+      </div>
+      <h1>FANOS SEC — <span style="color: var(--cyber-neon); text-shadow: 0 0 20px var(--cyber-neon-glow);">SECURITY TRAINING SANDBOX</span></h1>
+      <p>
+        An interactive, isolated cybersecurity proving ground powered by Node.js, Express, and an in-memory SQLite database. Learn how critical web application vulnerabilities work, practice exploitation techniques, and master defensive secure coding standards.
+      </p>
+    </section>
+
+    <!-- Lab Modules Grid -->
+    <section class="grid-2">
+      
+      <!-- Module 1: SQL Injection Lab Card -->
+      <div class="card">
+        <div>
+          <div class="card-header">
+            <div class="card-icon">💉</div>
+            <span class="status-pill easy">BEGINNER / EASY</span>
+          </div>
+          <h3>SQL Injection (SQLi) Lab</h3>
+          <p>
+            Exploit an intentionally vulnerable login system that uses direct string concatenation in SQLite queries. Practice authentication bypass payloads to compromise the root administrator account and extract secret flags.
+          </p>
+          <div class="card-meta">
+            Target Flag: <span>FLAG{fanos_sec_sql_master}</span><br>
+            Attack Class: <span>CWE-89 (Improper Neutralization)</span>
+          </div>
+        </div>
+        <div>
+          <a href="/sqli.html" class="btn btn-neon">Launch SQLi Lab →</a>
+        </div>
+      </div>
+
+      <!-- Module 2: Stored XSS Lab Card -->
+      <div class="card cyan-card">
+        <div>
+          <div class="card-header">
+            <div class="card-icon cyan-icon">⚡</div>
+            <span class="status-pill intermediate">INTERMEDIATE</span>
+          </div>
+          <h3>Stored Cross-Site Scripting (XSS)</h3>
+          <p>
+            Test real-world stored XSS vulnerabilities on a live community message board. Discover how unescaped DOM insertion allows attackers to execute arbitrary JavaScript, inspect cookies, and simulate session hijacking.
+          </p>
+          <div class="card-meta">
+            Target Objective: <span>Session Cookie & Alert Trigger</span><br>
+            Attack Class: <span>CWE-79 (Improper Neutralization of Input)</span>
+          </div>
+        </div>
+        <div>
+          <a href="/xss.html" class="btn btn-cyan">Launch XSS Lab →</a>
+        </div>
+      </div>
+
+    </section>
+
+    <!-- Sandbox Architecture & Safeguards -->
+    <section class="panel" style="margin-bottom: 3rem;">
+      <div class="panel-header">
+        <h2 class="panel-title">🛡️ Sandbox Architecture & Environmental Isolation</h2>
+      </div>
+      <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 1.5rem; font-size: 0.95rem;">
+        <div>
+          <h4 style="color: var(--cyber-neon); margin-bottom: 0.5rem; font-family: 'JetBrains Mono', monospace;">1. In-Memory Database</h4>
+          <p style="color: var(--text-muted);">
+            All lab state resides purely in SQLite RAM (<code>:memory:</code>). Restarting the Node server resets all tables and seed records to clean initial states.
+          </p>
+        </div>
+        <div>
+          <h4 style="color: var(--cyber-cyan); margin-bottom: 0.5rem; font-family: 'JetBrains Mono', monospace;">2. Live Query Telemetry</h4>
+          <p style="color: var(--text-muted);">
+            Each lab module provides real-time backend query inspectors so students can see exactly how their inputs manipulate backend logic.
+          </p>
+        </div>
+        <div>
+          <h4 style="color: var(--cyber-amber); margin-bottom: 0.5rem; font-family: 'JetBrains Mono', monospace;">3. Dual-Sided Education</h4>
+          <p style="color: var(--text-muted);">
+            Every lab contains both the offensive exploitation vectors and the corresponding defensive remediation code (Parameterized queries & CSP).
+          </p>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- Global Footer -->
+  <footer>
+    <div class="container">
+      <p>FANOS SEC Training Sandbox · Built for internal security research and practical cyber defense education.</p>
+    </div>
+  </footer>
+
+</body>
+</html>

@@ -1,0 +1,27 @@
+{
+  "name": "fanos-sec-training-sandbox",
+  "version": "1.0.0",
+  "description": "Fanos Sec - Security Training Sandbox (SQL Injection & Stored XSS Practice Labs)",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "node server.js"
+  },
+  "dependencies": {
+    "cookie-parser": "^1.4.7",
+    "cors": "^2.8.6",
+    "express": "^4.22.2",
+    "sql.js": "^1.14.2",
+    "sqlite3": "^5.1.7"
+  },
+  "keywords": [
+    "cybersecurity",
+    "sqli",
+    "xss",
+    "training",
+    "sandbox",
+    "fanos-sec"
+  ],
+  "author": "Fanos Sec",
+  "license": "ISC"
+}

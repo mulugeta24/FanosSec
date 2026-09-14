@@ -1,0 +1,62 @@
+================================================================================
+           WHERE TO ADD YOUR FANOS SEC LOGO PNG FILE
+================================================================================
+
+PROJECT STRUCTURE:
+------------------
+
+darkmodecyber-main/
+│
+├── backend/           ← Backend API (Node.js) - NOT HERE
+│
+└── frontend/          ← Frontend React App
+    │
+    ├── src/           ← Source code (components, pages) - NOT HERE
+    │
+    └── public/        ← ⭐⭐⭐ ADD YOUR LOGO HERE ⭐⭐⭐
+        │
+        ├── logo.png
+        ├── vite.svg
+        ├── bg_hacker.png
+        └── fanos-sec-logo.png  ← YOUR FILE GOES HERE
+
+
+================================================================================
+           EXACT FOLDER PATH (COPY THIS):
+================================================================================
+
+c:\Users\HP\Downloads\darkmodecyber-main\darkmodecyber-main\frontend\public\
+
+
+================================================================================
+           INSTRUCTIONS:
+================================================================================
+
+1. Save your FANOS SEC logo image (the blue shield logo you showed)
+
+2. Rename it to:  fanos-sec-logo.png
+
+3. Navigate to this folder:
+   c:\Users\HP\Downloads\darkmodecyber-main\darkmodecyber-main\frontend\public\
+
+4. Drag and drop your fanos-sec-logo.png file into that folder
+
+5. The file should be in FRONTEND → PUBLIC (not backend, not src)
+
+6. After adding the file, tell me and I'll update the code to use it!
+
+
+================================================================================
+           WHY THIS LOCATION?
+================================================================================
+
+✅ Frontend Public folder = Static files accessible to the website
+✅ Images in /public/ can be accessed with /filename.png in code
+✅ React serves files from /public/ folder to the browser
+
+❌ Backend folder = API server files only
+❌ Src folder = Source code that gets compiled
+❌ Root folder = Configuration files only
+
+
+================================================================================

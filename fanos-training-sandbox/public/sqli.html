@@ -1,0 +1,251 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SQL Injection Lab — FANOS SEC Sandbox</title>
+  <link rel="stylesheet" href="/style.css">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%2300FF41'><path d='M12 1L3 5v6c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V5l-9-4z'/></svg>">
+</head>
+<body>
+
+  <!-- Navigation Bar -->
+  <nav class="navbar">
+    <div class="container nav-container">
+      <div style="display: flex; align-items: center; gap: 1.5rem;">
+        <a href="http://localhost:5173" class="btn-back" title="Return to FANOS SEC Homepage">
+          ← Return to Platform Home
+        </a>
+        <a href="/" class="brand">
+          <span class="brand-badge">SQLi LAB</span>
+          <span>FANOS <span class="neon">SEC</span></span>
+        </a>
+      </div>
+      <ul class="nav-links">
+        <li><a href="/" class="nav-link">Dashboard</a></li>
+        <li><a href="/sqli.html" class="nav-link active">SQLi Lab</a></li>
+        <li><a href="/xss.html" class="nav-link">XSS Lab</a></li>
+        <li><a href="http://localhost:5173/labs" class="nav-link" style="color: var(--cyber-neon);">Labs Portal ↗</a></li>
+      </ul>
+    </div>
+  </nav>
+
+  <main class="container">
+    
+    <!-- Lab Header -->
+    <section class="hero" style="padding: 2.5rem 0 1.5rem; text-align: left;">
+      <div class="badge-tag">
+        <span>LAB #01 · AUTHENTICATION BYPASS</span>
+      </div>
+      <h1 style="font-size: 2.25rem;">SQL INJECTION <span style="color: var(--cyber-neon);">PRACTICE LAB</span></h1>
+      <p style="margin: 0.5rem 0 0; max-width: 100%;">
+        The administrative authentication portal below connects to an SQLite database. The backend uses direct string concatenation without input sanitation. Your objective is to manipulate the query boolean logic to bypass authentication and capture the root admin flag.
+      </p>
+    </section>
+
+    <!-- Lab Workspace Layout -->
+    <div class="lab-layout">
+      
+      <!-- Left Panel: Interactive Login Target -->
+      <div class="panel">
+        <div class="panel-header">
+          <h2 class="panel-title">🔐 Target Authentication Portal</h2>
+          <span class="status-pill easy">SQLITE ENGINE</span>
+        </div>
+
+        <form id="sqliForm">
+          <div class="form-group">
+            <label class="form-label" for="username">Username / Payload Input:</label>
+            <input 
+              type="text" 
+              id="username" 
+              name="username" 
+              class="form-input" 
+              placeholder="e.g. admin or ' OR '1'='1" 
+              required
+            >
+          </div>
+
+          <div class="form-group">
+            <label class="form-label" for="password">Password:</label>
+            <input 
+              type="password" 
+              id="password" 
+              name="password" 
+              class="form-input" 
+              placeholder="Enter password (or leave blank if bypassed)"
+            >
+          </div>
+
+          <button type="submit" class="btn btn-neon" id="submitBtn">
+            Execute Authentication →
+          </button>
+        </form>
+
+        <!-- Quick Payload Helper Drawer -->
+        <div style="margin-top: 2rem; border-top: 1px solid var(--border-light); padding-top: 1.25rem;">
+          <label class="form-label" style="font-size: 0.8rem; color: var(--text-muted);">
+            ⚡ Quick Practice Payloads (Click to Insert):
+          </label>
+          <div class="quick-payloads">
+            <span class="payload-chip" onclick="applyPayload('admin\' --', '')">admin' --</span>
+            <span class="payload-chip" onclick="applyPayload('admin', '\' OR \'1\'=\'1')">Password: ' OR '1'='1</span>
+            <span class="payload-chip" onclick="applyPayload('\' OR 1=1 --', '')">' OR 1=1 --</span>
+            <span class="payload-chip" onclick="applyPayload('admin', 'SuperSecretP@ss2026!')">Valid Admin Creds</span>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- Right Panel: Live Query Telemetry & Results -->
+      <div class="panel">
+        <div class="panel-header">
+          <h2 class="panel-title">📡 Live Backend Telemetry & Results</h2>
+        </div>
+
+        <div>
+          <label class="form-label" style="font-size: 0.8rem; color: var(--text-muted);">
+            Backend Query Template:
+          </label>
+          <div class="terminal" style="color: #94A3B8; margin-top: 0.25rem;">
+            SELECT * FROM users WHERE username = '<span style="color: var(--cyber-neon);">{username}</span>' AND password = '<span style="color: var(--cyber-cyan);">{password}</span>'
+          </div>
+        </div>
+
+        <div style="margin-top: 1rem;">
+          <label class="form-label" style="font-size: 0.8rem; color: var(--text-muted);">
+            Last Executed Raw SQL Query:
+          </label>
+          <div class="terminal" id="queryOutput" style="color: #F8FAFC;">
+            [Ready] Awaiting authentication request...
+          </div>
+        </div>
+
+        <!-- Result Container -->
+        <div id="resultContainer" style="margin-top: 1.5rem;"></div>
+
+      </div>
+
+    </div>
+
+    <!-- Educational Deep-Dive & Remediation Section -->
+    <section class="panel" style="margin-bottom: 3rem;">
+      <div class="panel-header">
+        <h2 class="panel-title">🛡️ Vulnerability Analysis & Secure Remediation</h2>
+      </div>
+
+      <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 2rem;">
+        <div>
+          <h4 style="color: var(--cyber-red); margin-bottom: 0.5rem; font-family: 'JetBrains Mono', monospace;">
+            ❌ Why This Code Is Vulnerable
+          </h4>
+          <p style="font-size: 0.9rem; color: var(--text-gray); line-height: 1.6;">
+            The application concatenates raw strings into SQL commands without parameterization:
+          </p>
+          <div class="terminal" style="color: var(--cyber-red); background: #1a050b; border-color: rgba(255,51,102,0.3);">
+            // VULNERABLE PATTERN<br>
+            const sql = `SELECT * FROM users WHERE username = '${username}' AND password = '${password}'`;<br>
+            db.get(sql, ...);
+          </div>
+          <p style="font-size: 0.85rem; color: var(--text-muted);">
+            When the input contains single quotes, the SQL parser is tricked into treating user input as syntax tokens, breaking the query boundaries.
+          </p>
+        </div>
+
+        <div>
+          <h4 style="color: var(--cyber-neon); margin-bottom: 0.5rem; font-family: 'JetBrains Mono', monospace;">
+            ✅ How To Fix (Secure Parameterization)
+          </h4>
+          <p style="font-size: 0.9rem; color: var(--text-gray); line-height: 1.6;">
+            Always use parameterized prepared statements with positional placeholders (<code>?</code>):
+          </p>
+          <div class="terminal" style="color: var(--cyber-neon); background: #031408; border-color: rgba(0,255,65,0.3);">
+            // SECURE REMEDIATION<br>
+            const sql = 'SELECT * FROM users WHERE username = ? AND password = ?';<br>
+            db.get(sql, [username, password], (err, user) => { ... });
+          </div>
+          <p style="font-size: 0.85rem; color: var(--text-muted);">
+            With parameterization, the database engine treats all input strictly as literal strings, preventing query manipulation entirely.
+          </p>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <footer>
+    <div class="container">
+      <p>FANOS SEC Training Sandbox · SQL Injection Module · In-Memory Database</p>
+    </div>
+  </footer>
+
+  <script>
+    function applyPayload(u, p) {
+      document.getElementById('username').value = u;
+      document.getElementById('password').value = p;
+    }
+
+    document.getElementById('sqliForm').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const username = document.getElementById('username').value;
+      const password = document.getElementById('password').value;
+      const resultContainer = document.getElementById('resultContainer');
+      const queryOutput = document.getElementById('queryOutput');
+      const submitBtn = document.getElementById('submitBtn');
+
+      submitBtn.disabled = true;
+      submitBtn.innerText = 'Executing Query...';
+
+      try {
+        const response = await fetch('/api/sqli/login', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ username, password })
+        });
+
+        const data = await response.json();
+
+        // Update Query Telemetry
+        queryOutput.innerHTML = `<span style="color: var(--cyber-cyan);">${data.executedQuery || 'Query Error'}</span>`;
+
+        if (data.success) {
+          resultContainer.innerHTML = `
+            <div style="background: rgba(0,255,65,0.1); border: 1px solid var(--border-neon); border-radius: 12px; padding: 1.5rem;">
+              <div style="display: flex; align-items: center; gap: 0.5rem; margin-bottom: 0.75rem;">
+                <span style="font-size: 1.25rem;">✅</span>
+                <strong style="color: var(--cyber-neon); font-size: 1.1rem;">${data.message}</strong>
+              </div>
+              <p style="font-size: 0.9rem; color: var(--text-gray); margin-bottom: 1rem;">
+                Authenticated User: <strong style="color: #FFF;">${data.user.fullName}</strong> (${data.user.role})
+              </p>
+              <div class="flag-box">
+                <div style="font-size: 0.75rem; text-transform: uppercase; color: var(--text-muted); margin-bottom: 0.25rem;">
+                  🎉 CHALLENGE SOLVED — SECRET FLAG CAPTURED:
+                </div>
+                <div class="flag-text">${data.flag}</div>
+              </div>
+            </div>
+          `;
+        } else {
+          resultContainer.innerHTML = `
+            <div style="background: rgba(255,51,102,0.1); border: 1px solid rgba(255,51,102,0.4); border-radius: 12px; padding: 1.25rem;">
+              <div style="display: flex; align-items: center; gap: 0.5rem; margin-bottom: 0.5rem;">
+                <span style="font-size: 1.25rem;">❌</span>
+                <strong style="color: var(--cyber-red);">${data.message || data.error}</strong>
+              </div>
+              <p style="font-size: 0.85rem; color: var(--text-muted);">
+                ${data.hint || 'Check your payload syntax and quotes.'}
+              </p>
+            </div>
+          `;
+        }
+      } catch (err) {
+        resultContainer.innerHTML = `<div style="color: var(--cyber-red);">Network or server error: ${err.message}</div>`;
+      } finally {
+        submitBtn.disabled = false;
+        submitBtn.innerText = 'Execute Authentication →';
+      }
+    });
+  </script>
+</body>
+</html>

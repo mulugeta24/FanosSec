@@ -1,0 +1,300 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Stored XSS Lab — FANOS SEC Sandbox</title>
+  <link rel="stylesheet" href="/style.css">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%2300E5FF'><path d='M12 1L3 5v6c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V5l-9-4z'/></svg>">
+</head>
+<body>
+
+  <!-- Navigation Bar -->
+  <nav class="navbar">
+    <div class="container nav-container">
+      <div style="display: flex; align-items: center; gap: 1.5rem;">
+        <a href="http://localhost:5173" class="btn-back" title="Return to FANOS SEC Homepage">
+          ← Return to Platform Home
+        </a>
+        <a href="/" class="brand">
+          <span class="brand-badge" style="background: var(--cyber-cyan);">XSS LAB</span>
+          <span>FANOS <span style="color: var(--cyber-cyan); text-shadow: 0 0 12px var(--cyber-cyan-glow);">SEC</span></span>
+        </a>
+      </div>
+      <ul class="nav-links">
+        <li><a href="/" class="nav-link">Dashboard</a></li>
+        <li><a href="/sqli.html" class="nav-link">SQLi Lab</a></li>
+        <li><a href="/xss.html" class="nav-link active" style="color: var(--cyber-cyan); border-color: var(--border-cyan); background: rgba(0,229,255,0.1);">XSS Lab</a></li>
+        <li><a href="http://localhost:5173/labs" class="nav-link" style="color: var(--cyber-cyan);">Labs Portal ↗</a></li>
+      </ul>
+    </div>
+  </nav>
+
+  <main class="container">
+    
+    <!-- Lab Header -->
+    <section class="hero" style="padding: 2.5rem 0 1.5rem; text-align: left;">
+      <div class="badge-tag" style="color: var(--cyber-cyan); border-color: var(--border-cyan); background: rgba(0,229,255,0.1);">
+        <span>LAB #02 · STORED CROSS-SITE SCRIPTING</span>
+      </div>
+      <h1 style="font-size: 2.25rem;">STORED XSS <span style="color: var(--cyber-cyan);">PRACTICE LAB</span></h1>
+      <p style="margin: 0.5rem 0 0; max-width: 100%;">
+        The community message board below stores comments in an SQLite database and renders them directly into the browser DOM using unescaped <code>innerHTML</code>. Test how HTML and JavaScript payloads execute in the user's browser session and practice accessing document cookies.
+      </p>
+    </section>
+
+    <!-- Cookie Telemetry Inspector Bar -->
+    <section class="panel" style="margin-bottom: 2rem; padding: 1.25rem 1.75rem; background: rgba(0, 229, 255, 0.05); border-color: var(--border-cyan);">
+      <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: gap: 1rem;">
+        <div>
+          <span style="font-family: 'JetBrains Mono', monospace; font-size: 0.8rem; color: var(--cyber-cyan); font-weight: 700; text-transform: uppercase;">
+            🍪 Active Browser Session Cookies (Simulated Sensitive State):
+          </span>
+          <div id="cookieDisplay" class="terminal" style="margin: 0.5rem 0 0; padding: 0.5rem 0.75rem; color: #FFF; font-size: 0.8rem;">
+            Loading cookies...
+          </div>
+        </div>
+        <button onclick="refreshCookies()" class="btn btn-outline" style="width: auto; padding: 0.4rem 0.8rem; font-size: 0.8rem;">
+          🔄 Inspect Cookies
+        </button>
+      </div>
+    </section>
+
+    <!-- Lab Workspace Layout -->
+    <div class="lab-layout">
+      
+      <!-- Left Panel: Comment Submission Form -->
+      <div class="panel">
+        <div class="panel-header">
+          <h2 class="panel-title">✍️ Post to Message Board</h2>
+          <span class="status-pill intermediate">UNSANITIZED INPUT</span>
+        </div>
+
+        <form id="commentForm">
+          <div class="form-group">
+            <label class="form-label" for="author">Author Handle:</label>
+            <input 
+              type="text" 
+              id="author" 
+              class="form-input" 
+              placeholder="e.g. Hacker_0x or Security_Researcher" 
+              value="Trainee"
+              required
+            >
+          </div>
+
+          <div class="form-group">
+            <label class="form-label" for="message">Comment / XSS Payload:</label>
+            <textarea 
+              id="message" 
+              class="form-textarea" 
+              placeholder="Type your message or insert an HTML/JavaScript payload here..." 
+              required
+            ></textarea>
+          </div>
+
+          <button type="submit" class="btn btn-cyan" id="postBtn">
+            Post to Board →
+          </button>
+        </form>
+
+        <!-- Quick Payload Chips -->
+        <div style="margin-top: 2rem; border-top: 1px solid var(--border-light); padding-top: 1.25rem;">
+          <label class="form-label" style="font-size: 0.8rem; color: var(--text-muted);">
+            ⚡ Quick Practice Payloads (Click to Insert):
+          </label>
+          <div class="quick-payloads">
+            <span class="payload-chip" onclick="applyXss('<img src=x onerror=alert(\'XSS_Triggered_by_Fanos_Sec\')>')">&lt;img src=x onerror=alert(...)&gt;</span>
+            <span class="payload-chip" onclick="applyXss('<img src=x onerror=\"alert(\'Session Cookie: \' + document.cookie)\">')">Cookie Alert Payload</span>
+            <span class="payload-chip" onclick="applyXss('<svg onload=alert(document.domain)>')">&lt;svg onload=alert(domain)&gt;</span>
+            <span class="payload-chip" onclick="applyXss('<h2 style=\"color:#00FF41;\">Defaced Header by Red Team</h2>')">HTML Defacement</span>
+          </div>
+        </div>
+
+        <div style="margin-top: 1.5rem;">
+          <button onclick="resetBoard()" class="btn btn-outline" style="font-size: 0.8rem; padding: 0.6rem;">
+            🔄 Reset Message Board to Default
+          </button>
+        </div>
+
+      </div>
+
+      <!-- Right Panel: Live Rendered Comments Container -->
+      <div class="panel">
+        <div class="panel-header">
+          <h2 class="panel-title">💬 Live Message Feed</h2>
+          <span style="font-size: 0.8rem; color: var(--text-muted); font-family: 'JetBrains Mono', monospace;" id="commentCount">0 Posts</span>
+        </div>
+
+        <div style="margin-bottom: 1rem; font-size: 0.85rem; color: var(--text-muted);">
+          ⚠️ Messages are rendered directly with <code>innerHTML</code> without escaping.
+        </div>
+
+        <!-- Dynamic Comments List Container -->
+        <div id="commentsList" style="max-height: 480px; overflow-y: auto; padding-right: 0.5rem;">
+          <!-- Rendered via JavaScript -->
+        </div>
+
+      </div>
+
+    </div>
+
+    <!-- Educational Deep-Dive & Remediation Section -->
+    <section class="panel" style="margin-bottom: 3rem;">
+      <div class="panel-header">
+        <h2 class="panel-title">🛡️ Vulnerability Analysis & Secure Remediation</h2>
+      </div>
+
+      <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 2rem;">
+        <div>
+          <h4 style="color: var(--cyber-red); margin-bottom: 0.5rem; font-family: 'JetBrains Mono', monospace;">
+            ❌ Why This Code Is Vulnerable
+          </h4>
+          <p style="font-size: 0.9rem; color: var(--text-gray); line-height: 1.6;">
+            The frontend takes raw user input from the API and inserts it directly into the DOM using <code>innerHTML</code>:
+          </p>
+          <div class="terminal" style="color: var(--cyber-red); background: #1a050b; border-color: rgba(255,51,102,0.3);">
+            // VULNERABLE DOM INSERTION<br>
+            messageDiv.innerHTML = comment.message;
+          </div>
+          <p style="font-size: 0.85rem; color: var(--text-muted);">
+            The browser parses the string as HTML tags and event handlers (e.g. <code>onerror</code>), executing unauthorized script logic in the victim's session.
+          </p>
+        </div>
+
+        <div>
+          <h4 style="color: var(--cyber-cyan); margin-bottom: 0.5rem; font-family: 'JetBrains Mono', monospace;">
+            ✅ How To Fix (Context-Aware Escaping & CSP)
+          </h4>
+          <p style="font-size: 0.9rem; color: var(--text-gray); line-height: 1.6;">
+            1. Use safe DOM text assignment (<code>textContent</code>):
+          </p>
+          <div class="terminal" style="color: var(--cyber-cyan); background: #031418; border-color: rgba(0,229,255,0.3);">
+            // SECURE DOM INSERTION<br>
+            messageDiv.textContent = comment.message;
+          </div>
+          <p style="font-size: 0.85rem; color: var(--text-muted);">
+            2. For rich text, sanitize with <code>DOMPurify.sanitize(input)</code>.<br>
+            3. Set <code>HttpOnly</code> on sensitive cookies to block JavaScript extraction.
+          </p>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <footer>
+    <div class="container">
+      <p>FANOS SEC Training Sandbox · Stored XSS Module · In-Memory Database</p>
+    </div>
+  </footer>
+
+  <script>
+    function applyXss(payload) {
+      document.getElementById('message').value = payload;
+    }
+
+    function refreshCookies() {
+      const display = document.getElementById('cookieDisplay');
+      display.innerText = document.cookie || '(No cookies found in current document scope)';
+    }
+
+    // Fetch and render comments
+    async function loadComments() {
+      const list = document.getElementById('commentsList');
+      const countEl = document.getElementById('commentCount');
+
+      try {
+        const res = await fetch('/api/xss/comments');
+        const data = await res.json();
+
+        if (data.success) {
+          countEl.innerText = `${data.comments.length} Posts`;
+          list.innerHTML = '';
+
+          if (data.comments.length === 0) {
+            list.innerHTML = '<div style="color: var(--text-muted); text-align: center; padding: 2rem;">No comments posted yet.</div>';
+            return;
+          }
+
+          data.comments.forEach(comment => {
+            const card = document.createElement('div');
+            card.className = 'comment-card';
+
+            const header = document.createElement('div');
+            header.className = 'comment-author';
+            header.innerHTML = `<span>👤 ${escapeHtml(comment.author)}</span><span class="comment-time">${new Date(comment.created_at).toLocaleTimeString()}</span>`;
+
+            // ⚠️ INTENTIONAL VULNERABILITY: rendering message using innerHTML
+            const body = document.createElement('div');
+            body.className = 'comment-body';
+            body.innerHTML = comment.message; // Allows script/image execution
+
+            card.appendChild(header);
+            card.appendChild(body);
+            list.appendChild(card);
+          });
+        }
+      } catch (err) {
+        list.innerHTML = `<div style="color: var(--cyber-red);">Error loading comments: ${err.message}</div>`;
+      }
+    }
+
+    // Helper to safely escape author names while keeping message vulnerable for demo
+    function escapeHtml(text) {
+      const map = { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#039;' };
+      return String(text).replace(/[&<>"']/g, m => map[m]);
+    }
+
+    // Handle Comment Submission
+    document.getElementById('commentForm').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const author = document.getElementById('author').value;
+      const message = document.getElementById('message').value;
+      const postBtn = document.getElementById('postBtn');
+
+      postBtn.disabled = true;
+      postBtn.innerText = 'Posting...';
+
+      try {
+        const res = await fetch('/api/xss/comments', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ author, message })
+        });
+
+        const data = await res.json();
+        if (data.success) {
+          document.getElementById('message').value = '';
+          await loadComments();
+        } else {
+          alert('Error posting comment: ' + data.message);
+        }
+      } catch (err) {
+        alert('Server communication error: ' + err.message);
+      } finally {
+        postBtn.disabled = false;
+        postBtn.innerText = 'Post to Board →';
+      }
+    });
+
+    // Reset board
+    async function resetBoard() {
+      if (!confirm('Reset the message board back to clean seed data?')) return;
+      try {
+        const res = await fetch('/api/xss/reset', { method: 'POST' });
+        const data = await res.json();
+        if (data.success) {
+          await loadComments();
+        }
+      } catch (err) {
+        alert('Failed to reset: ' + err.message);
+      }
+    }
+
+    // Initialize
+    refreshCookies();
+    loadComments();
+  </script>
+</body>
+</html>

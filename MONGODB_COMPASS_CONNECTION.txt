@@ -1,0 +1,45 @@
+================================================================================
+           MONGODB COMPASS CONNECTION STRING
+================================================================================
+
+Copy and paste this into MongoDB Compass URI field:
+
+mongodb+srv://fanossec_admin:Mulugeta4561644%23%40@cluster0.sysb73f.mongodb.net/fanossec
+
+
+NOTE: Special characters in password are URL-encoded:
+  # becomes %23
+  @ becomes %40
+
+
+================================================================================
+           CONNECTION DETAILS
+================================================================================
+
+Cluster:  cluster0.sysb73f.mongodb.net
+Username: fanossec_admin
+Password: Mulugeta4561644#@
+Database: fanossec
+
+
+================================================================================
+           HOW TO CONNECT
+================================================================================
+
+1. Open MongoDB Compass
+2. Click "New Connection"
+3. Paste the connection string above into the URI field
+4. Optional: Name it "FANOS SEC Atlas"
+5. Click "Save & Connect"
+
+
+================================================================================
+           TROUBLESHOOTING
+================================================================================
+
+If connection fails:
+- Check your internet connection
+- Verify IP address is whitelisted in Atlas (196.188.46.169)
+- Or whitelist all IPs (0.0.0.0/0) in Network Access
+
+================================================================================
