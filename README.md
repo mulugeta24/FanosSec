@@ -1,154 +1,263 @@
-# 🛡️ FANOS SEC
+# FANOS SEC
 
-> A professional cybersecurity learning and practical security training platform — built with React 19, Node.js, Express 5, and MongoDB Atlas.
->
-> **Core Identity:** *Learn. Practice. Challenge. Certify.*
+FANOS SEC is a cybersecurity education platform for structured learning, practical labs, security challenges, and verifiable certification. The application combines a React web client, an Express API, and a MongoDB data layer.
 
-![GitHub repo size](https://img.shields.io/github/repo-size/mulugeta24/darkmodecyber)
-![GitHub last commit](https://img.shields.io/github/last-commit/mulugeta24/darkmodecyber)
-![License](https://img.shields.io/badge/license-MIT-green)
+> Learn. Practice. Challenge. Certify.
 
----
+## Platform Overview
 
-## 🚀 Live Demo
+FANOS SEC combines a modern web application, a RESTful backend, cloud database infrastructure, and an isolated cybersecurity training sandbox. Learners can progress from foundational concepts to practical exercises while administrators manage educational content, assessments, users, certificates, and security knowledge.
 
-- **Frontend:** [Vercel](https://darkmodecyber.vercel.app) *(deploy to activate)*
-- **Backend API:** [Render](https://darkmodecyber-api.onrender.com) *(deploy to activate)*
+The platform is organized around four stages:
 
----
-
-## ✨ Features
-
-- 🔐 JWT Authentication with role-based access control (Admin / Student)
-- 📚 4 Professional Cybersecurity Certification Tracks (DMCST, DMCWSS, DMCCRT, DMCCBT)
-- 🗺️ Structured Learning Paths (Fundamentals, Red Team, Blue Team, SOC Analyst, Web Security)
-- 🧪 Hands-On Interactive Labs & Virtual Sandboxes across 6 security categories
-- 🚩 Security Challenges & CTF Arena with dynamic flag verification and points
-- 📖 Cybersecurity Knowledge Hub (Security Guides, Security Tools, Vulnerabilities, Threat Intel)
-- 📊 Student Progress Tracking System with live completion metrics
-- 🏆 Verifiable PDF Certification Center with cryptographic verification registry (`/verify`)
-- 👨‍💼 Comprehensive Admin Dashboard (courses, paths, challenges, blogs, messages)
-- 📝 Cyber Threat Intelligence & Blog platform
-- 📬 Direct transmission contact system with admin inbox
-- 🌐 Fully responsive, state-of-the-art dark cybersecurity UI
-
----
-
-## 🛠️ Tech Stack
-
-| Layer | Technology |
-|-------|-----------|
-| Frontend | React 19, Vite, Tailwind CSS, Framer Motion |
-| Backend | Node.js, Express 5 |
-| Database | MongoDB Atlas, Mongoose |
-| Auth | JWT, bcryptjs |
-| PDF | PDFKit |
-| Deployment | Vercel (frontend), Render (backend) |
-
----
-
-## 📁 Project Structure
-
-```
-fanossec/
-├── backend/
-│   ├── config/
-│   ├── controllers/
-│   ├── middleware/
-│   ├── models/
-│   ├── routes/
-│   ├── utils/
-│   └── server.js
-└── frontend/
-    ├── src/
-    │   ├── components/
-    │   ├── pages/
-    │   ├── context/
-    │   └── data/
-    └── index.html
+```text
+LEARN -> PRACTICE -> CHALLENGE -> CERTIFY
 ```
 
----
+Learners follow structured paths, complete courses and lessons, practice in controlled labs, solve security challenges, complete assessments, track progress, and earn verifiable certificates.
 
-## ⚙️ Local Setup
+## Contents
 
-### Prerequisites
-- Node.js v18+
-- MongoDB Atlas account
+- [Capabilities](#capabilities)
+- [Architecture](#architecture)
+- [Technology](#technology)
+- [Requirements](#requirements)
+- [Local development](#local-development)
+- [Configuration](#configuration)
+- [Application areas](#application-areas)
+- [Deployment](#deployment)
+- [Security notes](#security-notes)
+- [License](#license)
 
-### Backend
+## Capabilities
+
+- JWT authentication with student and administrator roles
+- Courses, modules, lessons, videos, resources, quizzes, and learning paths
+- Hands-on labs and CTF-style challenges with progress and scoring
+- Security guides, tools, vulnerabilities, advisories, threat intelligence, and glossary content
+- Student enrollment, progress tracking, and PDF certificate generation
+- Public certificate verification backed by the certificate registry
+- Administrative CMS for managing learning and knowledge content
+- Responsive frontend with dashboards for learners and administrators
+
+### Authentication and Access Control
+
+- JWT-based authentication
+- Password hashing with bcryptjs
+- Role-based authorization for students and administrators
+- Protected API endpoints and authenticated dashboards
+
+### Hands-on Training
+
+The isolated training sandbox currently provides intentionally vulnerable SQL injection and stored cross-site scripting (XSS) scenarios for authorized educational use. It is designed to keep practical experimentation separate from the main application and database.
+
+### Security Knowledge Hub
+
+The knowledge layer brings together security guides, vulnerability information, advisories, threat intelligence, security tools, news, glossary entries, cheat sheets, and technical articles.
+
+### Certification Workflow
+
+```text
+Course Completion -> Eligibility Check -> PDF Generation -> Registry -> Public Verification
+```
+
+Certificates are generated for eligible learners and recorded in a registry that supports public verification.
+
+## Architecture
+
+```text
+frontend/                 React 19 + Vite client
+    |
+    | HTTP/JSON (VITE_API_URL)
+    v
+backend/                  Express 5 REST API
+    |
+    v
+MongoDB Atlas              Mongoose models and persistence
+
+fanos-training-sandbox/   Isolated local labs on port 8080
+```
+
+The repository contains three independently runnable Node.js applications and one shared data service:
+
+| Service | Technology | Port | Responsibility |
+| --- | --- | ---: | --- |
+| Frontend | React + Vite | `5173` | Learner and admin web application |
+| Backend | Node.js + Express | `5000` | REST API, authentication, CMS, and certificates |
+| Training sandbox | Express + SQLite | `8080` | Local SQL injection and stored XSS practice labs |
+| MongoDB | MongoDB Atlas and Mongoose | Cloud | Persistent application data |
+
+## Technology
+
+- **Frontend:** React 19, React Router, Vite, Tailwind CSS, Framer Motion, Axios, Recharts
+- **Backend:** Node.js, Express 5, Mongoose, MongoDB, JWT, bcryptjs, PDFKit
+- **Training sandbox:** Express 4, SQLite, `sql.js`, and `sqlite3`
+- **Deployment:** Vercel for the frontend and Render for the API
+
+## Requirements
+
+- Node.js 18 or later
+- npm 9 or later
+- A MongoDB Atlas database, or another reachable MongoDB instance
+- Git
+
+## Local development
+
+Install dependencies in each application directory:
+
 ```bash
 cd backend
 npm install
-# Create .env file with:
-# MONGO_URI=your_mongodb_atlas_uri
-# JWT_SECRET=your_secret_key
-# PORT=5000
-node server.js
+
+cd ../frontend
+npm install
+
+cd ../fanos-training-sandbox
+npm install
 ```
 
-### Seed Database
+Create the backend environment file described in [Configuration](#configuration), then start the services in separate terminals:
+
 ```bash
+# Terminal 1: API
 cd backend
-node seeder.js
-```
+npm run dev
 
-### Frontend
-```bash
+# Terminal 2: frontend
 cd frontend
-npm install
+npm run dev
+
+# Terminal 3: optional training sandbox
+cd fanos-training-sandbox
 npm run dev
 ```
 
----
+Open the frontend at `http://localhost:5173`. The API health response is available at `http://localhost:5000/`. When the sandbox is running, open `http://localhost:8080`.
 
-## 🔑 Authentication & Access Setup
+### Database seeding
 
-- **Admin Account:** Create an administrator account using the secure setup process or administrative seed command configured with your private environment variables.
-- **Student Account:** Use the registration page (`/signup`) to create a learner account and begin tracking progress.
+The backend includes seed and administrator utilities. Run them from `backend` only after configuring a valid `MONGO_URI`:
 
----
+```bash
+cd backend
+npm run seed
+node ensure-admin.js
+```
 
-## 📜 Professional Certification Tracks
+Review the scripts before running them against a shared or production database.
 
-| Track | Level | Focus |
-|-------|-------|-------|
-| FANOS SEC Security Tester (DMCST) | Beginner | Foundational programming, networking, offensive & defensive basics |
-| FANOS SEC Web Security Specialist (DMCWSS) | Intermediate | OWASP Top 10, API security, WAF bypass, bug hunting |
-| FANOS SEC Certified Red Teamer (DMCCRT) | Intermediate | Enterprise penetration testing, Active Directory, evasion & pivoting |
-| FANOS SEC Certified Blue Teamer (DMCCBT) | Advanced | Threat hunting, SIEM engineering, malware analysis, incident response |
+### Frontend quality checks
 
----
+```bash
+cd frontend
+npm run lint
+npm run build
+```
 
-## 🚀 Deployment
+## Configuration
 
-### Backend → Render
-1. New Web Service → connect this repo
-2. Root Directory: `backend`
-3. Build: `npm install` | Start: `node server.js`
-4. Add env vars: `MONGO_URI`, `JWT_SECRET`, `NODE_ENV=production`
+Create `backend/.env` and keep it out of source control:
 
-### Frontend → Vercel
-1. New Project → connect this repo
-2. Root Directory: `frontend`
-3. Add env var: `VITE_API_URL=https://your-render-url.onrender.com/api`
+```env
+PORT=5000
+NODE_ENV=development
+MONGO_URI=mongodb+srv://<user>:<password>@<cluster>/<database>
+JWT_SECRET=replace-with-a-long-random-secret
+FRONTEND_URL=http://localhost:5173
+```
 
----
+Create `frontend/.env` when the API is not running at the default local URL:
 
-## 👨‍💻 Author & Leadership
+```env
+VITE_API_URL=http://localhost:5000/api
+```
 
-**Mulugeta Ababi**
-- Cybersecurity Instructor & Platform Administrator
-- YouTube: [@ApexTechEthiopia](https://www.youtube.com/@ApexTechEthiopia)
-- Telegram: [InfoSecureTech](https://t.me/InfoSecureTech)
-- Email: mulugetaababi237@gmail.com
+`VITE_API_URL` must include the `/api` path. In local development the frontend defaults to `http://localhost:5000/api` when the variable is absent.
 
----
+## Application areas
 
-## 📄 License
+The API is organized by domain under `backend/routes/` and `backend/controllers/`:
 
-MIT License — feel free to use and modify.
+- Authentication: `/api/auth`
+- Learning: `/api/courses`, `/api/modules`, `/api/lessons`, `/api/videos`, `/api/resources`, `/api/paths`
+- Assessment: `/api/quizzes`, `/api/question-bank`, `/api/challenges`, `/api/enrollments`
+- Certification: `/api/certificates`
+- Knowledge hub: `/api/blogs`, `/api/news`, `/api/guides`, `/api/glossary`, `/api/cheat-sheets`
+- Security intelligence: `/api/vulnerabilities`, `/api/threat-intel`, `/api/security-advisories`, `/api/security-tools`
+- Administration: `/api/admin/dashboard`, `/api/users`, and `/api/admin-activities`
 
----
+## Deployment
 
-*Built with ❤️ for the cybersecurity community in Ethiopia and beyond.*
+### Backend on Render
+
+The included `render.yaml` defines the API service:
+
+1. Create a Render web service connected to this repository.
+2. Set the root directory to `backend`.
+3. Use `npm install` as the build command and `node server.js` as the start command.
+4. Configure `MONGO_URI`, `JWT_SECRET`, and `FRONTEND_URL` as secret environment variables.
+5. Set `NODE_ENV=production`.
+
+### Frontend on Vercel
+
+1. Create a Vercel project connected to this repository.
+2. Set the root directory to `frontend`.
+3. Use the default Vite build settings, or run `npm run build` and publish `dist`.
+4. Set `VITE_API_URL` to the deployed API URL ending in `/api`, for example `https://your-api.onrender.com/api`.
+
+## Security notes
+
+- Never commit `.env` files, database credentials, JWT secrets, or generated private keys.
+- Use a strong, unique `JWT_SECRET` in every deployed environment.
+- Restrict `FRONTEND_URL` in production instead of relying on a wildcard CORS origin.
+- The training sandbox intentionally contains SQL injection and stored XSS vulnerabilities. Run it locally for authorized training only; do not expose it to the public internet or a production database.
+- Treat all challenge payloads and captured flags as educational content, not as authorization to test third-party systems.
+
+## Project Goals
+
+FANOS SEC is designed around a practical cybersecurity development model:
+
+```text
+FOUNDATION -> LEARNING -> PRACTICE -> CHALLENGES -> ASSESSMENT -> CERTIFICATION
+```
+
+The long-term goal is to make security learning structured, accessible, and practice-oriented, with measurable progress and demonstrable achievements.
+
+## Project Status
+
+**Status:** Active development
+
+New educational content, practical laboratories, challenges, administrative capabilities, and platform features are added over time.
+
+## Contributing
+
+Contributions, suggestions, and improvements are welcome:
+
+1. Create a focused feature branch.
+2. Follow the existing project structure and conventions.
+3. Test changes locally.
+4. Run frontend linting and the production build where applicable.
+5. Submit a clear pull request describing the change and validation performed.
+
+## Responsible Security Use
+
+FANOS SEC is intended for cybersecurity education, authorized security testing, and controlled laboratory environments. Users are responsible for complying with applicable laws, regulations, organizational policies, and explicit authorization requirements.
+
+The training sandbox intentionally contains vulnerable functionality. Do not connect it to production databases, deploy it publicly, or use its payloads against systems without authorization.
+
+## License
+
+This project is released under the MIT License. See the repository license metadata for the applicable terms.
+
+## Maintainer
+
+### Mulugeta Ababi
+
+**Founder and Maintainer - FANOS SEC**
+
+FANOS SEC is developed as a cybersecurity education and practical training platform focused on making security learning more structured, accessible, and practice-oriented.
+
+For project and training updates:
+
+- **YouTube:** [ApexTechEthiopia](https://www.youtube.com/@ApexTechEthiopia)
+- **Telegram:** [InfoSecureTech](https://t.me/InfoSecureTech)
